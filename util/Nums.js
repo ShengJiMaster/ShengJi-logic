@@ -1,6 +1,6 @@
-const vals = [
-	null,
-	null,
+const defaultVals = [
+	'joker-sm',
+	'joker-lg',
 	'2',
 	'3',
 	'4',
@@ -14,13 +14,17 @@ const vals = [
 	'queen',
 	'king',
 	'ace',
-	'joker-sm',
-	'joker-lg',
 ];
 
-const mapStrToNum = {};
-for (let i = 2; i < vals.length; i++) {
-	mapStrToNum[vals[i]] = i;
+class Nums {
+	constructor(vals = defaultVals) {
+		const mapStrToNum = {};
+		for (let i = 2; i < vals.length; i++) {
+			const str = vals[i];
+			mapStrToNum[str] = i;
+		}
+		this.mapStrToNum = mapStrToNum;
+	}
 }
 
 const Nums = { vals, mapStrToNum };

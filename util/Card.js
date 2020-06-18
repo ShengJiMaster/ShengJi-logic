@@ -1,22 +1,26 @@
 const Nums = require('./Nums');
 const Suits = require('./Suits');
+const cardValue = require('./cardValue');
 
 class Card {
-	constructor(n, s) {
-		const num = Nums.vals[n];
-		const suit = Suits.vals[s];
+	constructor(val) {
+		this.val = val;
+		const num = nums[n];
+		const suit = suits[s];
 
 		if (!num) throw new Error(`Card(number): ${n} is not valid!`);
-		this.number = number;
+		this.number = num;
 
 		// handle joker
-		if (num > 13) {
-			this.suit = Suits.vals[4];
+		if (n < 2) {
+			this.suit = suits[suits.length - 1];
 			return;
 		}
 
 		//handle standard card
-		if (!suit) throw new Error(`Card(suit): ${s} is not valid!`);
+		if (s === suits.length - 1)
+			throw new Error('Card: n < 2 can be of the suit joker');
+		if (!suit) throw new Error(`Card: 0<=s-${s}!<=3 must be true`);
 		this.suit = suit;
 	}
 }
