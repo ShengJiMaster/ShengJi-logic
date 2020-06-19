@@ -5,7 +5,7 @@ class Card {
 	 * @param {Number} id – An integer from 1–54, inclusive, representing the card ID
 	 */
 	constructor(id) {
-		if (id < 0 || 53 < id || typeof id !== 'number')
+		if (typeof id !== 'number' || id < 0 || 53 < id)
 			throw new Error(
 				`id must be number between 0-53, inclusive; received id=${id}`,
 			);
@@ -30,19 +30,35 @@ class Card {
 	}
 
 	/**
+	 * Gets the card rank index
+	 * @returns {Number}
+	 */
+	get r() {
+		const id = this.id;
+		return id % 13;
+	}
+
+	/**
+	 * Gets the card suit index
+	 * @returns {Number} 0 <= n <= 4
+	 */
+	get s() {
+		const { id, r } = this;
+		return (id - r) / 13;
+	}
+
+	/**
 	 * gets verbal description of the card
 	 * @returns {Object} with fields id, suit, and num
 	 */
 	get verbose() {
-		const id = this.id;
+		const { id, r, s } = this;
 		// handle jokers
 		if (id === 52) return { id, suit: 'joker', rank: 'sm' };
 		if (id === 53) return { id, suit: 'joker', rank: 'lg' };
 
 		// handle standard cards
-		const r = id % 13;
 		const rank = this.ranks[r];
-		const s = (id - r) / 13;
 		const suit = this.suits[s];
 		return { id, rank, suit };
 	}
@@ -55,7 +71,7 @@ class Card {
 	 * @returns {Number} – 0 <= trickRank <= 27
 	 */
 	toTrickRank(leadSuit, trumpSuit, trumpRank = 12) {
-		const id = this.id;
+		const { id, r, s } = this;
 		const maxRank = 30;
 		if (id === 53) return maxRank;
 		if (id === 52) return maxRank - 1;
@@ -74,8 +90,6 @@ class Card {
 			throw new Error(
 				`trumpRank must be 0 <= n <= 12; received trumpRank=${trumpRank}`,
 			);
-		const r = id % 13;
-		const s = (id - r) / 13;
 
 		if (s === trumpSuit && r === trumpRank) return maxRank - 2;
 		if (r === trumpRank) return maxRank - 3;
