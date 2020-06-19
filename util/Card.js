@@ -71,7 +71,7 @@ class Card {
 	}
 }
 
-const my = new Card(52);
-console.log(my.verbose);
+// const my = new Card(52);
+// console.log(my.verbose);
 
 module.exports = Card;

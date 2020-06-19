@@ -9,6 +9,17 @@ describe('Card', () => {
 			}
 			done();
 		});
+
+		it('should throw errors on non-numbers id', (done) => {
+			expect(buildCard('string')).toThrow(Error);
+			done();
+		});
+
+		it('should throw errors on ids outside bounds', (done) => {
+			expect(buildCard(54)).toThrow(Error);
+			expect(buildCard(-1)).toThrow(Error);
+			done();
+		});
 	});
 
 	describe('verbose', () => {
@@ -33,23 +44,13 @@ describe('Card', () => {
 				id: 52,
 				rank: 'sm',
 			};
-
-			expect(
-				buildCard(52, (x) => {
-					expect(x.verbose).toMatchObject(jokerSM);
-				}),
-			);
-
 			const jokerLG = {
 				id: 53,
 				rank: 'lg',
 			};
 
-			expect(
-				buildCard(53, (x) => {
-					expect(x.verbose).toMatchObject(jokerLG);
-				}),
-			);
+			buildCard(52, (card) => expect(card.verbose).toMatchObject(jokerSM));
+			buildCard(53, (card) => expect(card.verbose).toMatchObject(jokerLG));
 
 			done();
 		});
