@@ -1,10 +1,7 @@
-/**Default suits */
-
 /** Class respresenting a playing card */
-
 class Card {
 	/**
-	 * Create a card
+	 * Creates a card
 	 * @param {Number} id – An integer from 1–54, inclusive, representing the card ID
 	 */
 	constructor(id) {
@@ -51,23 +48,40 @@ class Card {
 	}
 
 	/**
-	 * toTrickRank –
-	 * @param {Number} leadSuit
-	 * @param {Number} trumpSuit
-	 * @param {Number} trumpRank
-	 * @returns {Number}
+	 * toTrickRank – calculates a card's relative value in a trick in constant time and memory
+	 * @param {Number} leadSuit – 0 <= leadSuit <= 3
+	 * @param {Number} trumpSuit – 0 <= trumpSuit <= 3
+	 * @param {Number=12} trumpRank – 0 <= trumpRank <= 12
+	 * @returns {Number} – 0 <= trickRank <= 27
 	 */
-	toTrickRank(leadSuit, trumpSuit, trumpNum = 12) {
+	toTrickRank(leadSuit, trumpSuit, trumpRank = 12) {
 		const id = this.id;
-		// handle jokers
-		if (id > 51) return id;
+		const maxRank = 30;
+		if (id === 53) return maxRank;
+		if (id === 52) return maxRank - 1;
 
-		// handle standard cards
+		if (typeof trumpSuit !== 'number' || trumpSuit < 0 || 3 < trumpSuit)
+			throw new Error(
+				`trumpSuit must be 0 <= n <= 3; received trumpSuit=${trumpSuit}`,
+			);
+
+		if (typeof leadSuit !== 'number' || leadSuit < 0 || 3 < leadSuit)
+			throw new Error(
+				`leadSuit must be 0 <= n <= 3; received leadSuit=${leadSuit}`,
+			);
+
+		if (typeof trumpRank !== 'number' || trumpRank < 0 || 12 < trumpRank)
+			throw new Error(
+				`trumpRank must be 0 <= n <= 12; received trumpRank=${trumpRank}`,
+			);
 		const r = id % 13;
-		const s = (id - n) / 13;
+		const s = (id - r) / 13;
 
-		const suit = this.suits[s];
-		return { id, rank, suit };
+		if (s === trumpSuit && r === trumpRank) return maxRank - 2;
+		if (r === trumpRank) return maxRank - 3;
+		if (s === trumpSuit) return 14 + r;
+		if (s === leadSuit) return 1 + r;
+		else return 0;
 	}
 }
 

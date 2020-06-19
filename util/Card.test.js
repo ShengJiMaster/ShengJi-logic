@@ -43,15 +43,16 @@ describe('Card', () => {
 			const jokerSM = {
 				id: 52,
 				rank: 'sm',
+				suit: 'joker',
 			};
 			const jokerLG = {
 				id: 53,
 				rank: 'lg',
+				suit: 'joker',
 			};
 
-			buildCard(52, (card) => expect(card.verbose).toMatchObject(jokerSM));
-			buildCard(53, (card) => expect(card.verbose).toMatchObject(jokerLG));
-
+			expect(new Card(52).verbose).toMatchObject(jokerSM);
+			expect(new Card(53).verbose).toMatchObject(jokerLG);
 			done();
 		});
 
@@ -67,6 +68,84 @@ describe('Card', () => {
 				});
 				test();
 			}
+			done();
+		});
+	});
+
+	describe('toTrickRank', () => {
+		it('should handle both jokers', (done) => {
+			expect(new Card(53).toTrickRank()).toEqual(30);
+			expect(new Card(52).toTrickRank()).toEqual(29);
+			done();
+		});
+
+		it('should handle card that is trumpRank and trumpSuit', (done) => {
+			for (let i = 0; i < 52; i++) {
+				const r = i % 13;
+				const s = (i - r) / 13;
+				const rank = new Card(i).toTrickRank(0, s, r);
+				expect(rank).toEqual(28);
+			}
+			done();
+		});
+
+		it('should handle trumpRank NOT trumpSuit', (done) => {
+			for (let i = 0; i < 52; i++) {
+				const r = i % 13;
+				const s = (i - r) / 13;
+				const ts = s === 3 ? 0 : s + 1;
+				const rank = new Card(i).toTrickRank(0, ts, r);
+				expect(rank).toEqual(27);
+			}
+			done();
+		});
+
+		it('should handle trumpSuit NOT trumpRank', (done) => {
+			for (let i = 0; i < 52; i++) {
+				const r = i % 13;
+				const tr = r === 12 ? 0 : r + 1;
+				const s = (i - r) / 13;
+				const rank = new Card(i).toTrickRank(0, s, tr);
+				expect(rank).toEqual(14 + r);
+			}
+			done();
+		});
+
+		it('should handle leadSuit NO trump status', (done) => {
+			for (let i = 0; i < 52; i++) {
+				const r = i % 13;
+				const tr = r === 12 ? 0 : r + 1;
+				const s = (i - r) / 13;
+				const ts = s === 3 ? 0 : s + 1;
+				const rank = new Card(i).toTrickRank(s, ts, tr);
+				expect(rank).toEqual(r + 1);
+			}
+			done();
+		});
+
+		it('should handle NO leadSuit NO trump', (done) => {
+			for (let i = 0; i < 52; i++) {
+				const r = i % 13;
+				const tr = r === 12 ? 0 : r + 1;
+				const s = (i - r) / 13;
+				const ts = s === 3 ? 0 : s + 1;
+				const rank = new Card(i).toTrickRank(ts, ts, tr);
+				expect(rank).toEqual(0);
+			}
+			done();
+		});
+
+		it('should represent every trickRank', (done) => {
+			const ranks = new Array(30).fill(0);
+			const tr = 0;
+			const ts = 0;
+			for (let i = 0; i < 52; i++) {
+				const rank = new Card(i).toTrickRank(0, ts, tr);
+				ranks[rank]++;
+			}
+
+			expect(test).toBe(true);
+			expect(ranks).toHaveLength(30);
 			done();
 		});
 	});
