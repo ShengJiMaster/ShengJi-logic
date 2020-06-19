@@ -73,9 +73,10 @@ describe('Card', () => {
 	});
 
 	describe('toTrickRank', () => {
+		const { maxTrickRank } = new Card(0);
 		it('should handle both jokers', (done) => {
-			expect(new Card(53).toTrickRank()).toEqual(30);
-			expect(new Card(52).toTrickRank()).toEqual(29);
+			expect(new Card(53).toTrickRank()).toEqual(maxTrickRank);
+			expect(new Card(52).toTrickRank()).toEqual(maxTrickRank - 1);
 			done();
 		});
 
@@ -84,7 +85,7 @@ describe('Card', () => {
 				const r = i % 13;
 				const s = (i - r) / 13;
 				const rank = new Card(i).toTrickRank(0, s, r);
-				expect(rank).toEqual(28);
+				expect(rank).toEqual(maxTrickRank - 2);
 			}
 			done();
 		});
@@ -95,7 +96,7 @@ describe('Card', () => {
 				const s = (i - r) / 13;
 				const ts = s === 3 ? 0 : s + 1;
 				const rank = new Card(i).toTrickRank(0, ts, r);
-				expect(rank).toEqual(27);
+				expect(rank).toEqual(maxTrickRank - 3);
 			}
 			done();
 		});
@@ -132,20 +133,6 @@ describe('Card', () => {
 				const rank = new Card(i).toTrickRank(ts, ts, tr);
 				expect(rank).toEqual(0);
 			}
-			done();
-		});
-
-		it('should represent every trickRank', (done) => {
-			const ranks = new Array(30).fill(0);
-			const tr = 0;
-			const ts = 0;
-			for (let i = 0; i < 52; i++) {
-				const rank = new Card(i).toTrickRank(0, ts, tr);
-				ranks[rank]++;
-			}
-
-			expect(test).toBe(true);
-			expect(ranks).toHaveLength(30);
 			done();
 		});
 	});

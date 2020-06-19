@@ -63,6 +63,10 @@ class Card {
 		return { id, rank, suit };
 	}
 
+	get maxTrickRank() {
+		return 32;
+	}
+
 	/**
 	 * toTrickRank – calculates a card's relative value in a trick in constant time and memory
 	 * @param {Number} leadSuit – 0 <= leadSuit <= 3
@@ -71,10 +75,9 @@ class Card {
 	 * @returns {Number} – 0 <= trickRank <= 27
 	 */
 	toTrickRank(leadSuit, trumpSuit, trumpRank = 12) {
-		const { id, r, s } = this;
-		const maxRank = 30;
-		if (id === 53) return maxRank;
-		if (id === 52) return maxRank - 1;
+		const { id, r, s, maxTrickRank } = this;
+		if (id === 53) return maxTrickRank;
+		if (id === 52) return maxTrickRank - 1;
 
 		if (typeof trumpSuit !== 'number' || trumpSuit < 0 || 3 < trumpSuit)
 			throw new Error(
@@ -91,8 +94,8 @@ class Card {
 				`trumpRank must be 0 <= n <= 12; received trumpRank=${trumpRank}`,
 			);
 
-		if (s === trumpSuit && r === trumpRank) return maxRank - 2;
-		if (r === trumpRank) return maxRank - 3;
+		if (s === trumpSuit && r === trumpRank) return maxTrickRank - 2;
+		if (r === trumpRank) return maxTrickRank - 3;
 		if (s === trumpSuit) return 14 + r;
 		if (s === leadSuit) return 1 + r;
 		else return 0;
