@@ -4,7 +4,10 @@ const isSorted = (arr, comparator = (a, b) => a - b) => {
 		const prev = arr[i - 1];
 		const cur = arr[i];
 		const sorted = comparator(cur, prev) > 0;
-		if (!sorted) return false;
+		if (!sorted) {
+			console.log(`isSorted: prev=${prev}; cur=${cur}; arr=${arr.join(',')}`);
+			return false;
+		}
 	}
 	return true;
 };
