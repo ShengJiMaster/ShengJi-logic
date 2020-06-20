@@ -54,7 +54,8 @@ describe('Deck', () => {
 		const oneDeck = new Deck();
 		it('should be called on init', (done) => {
 			const { deck } = oneDeck;
-			expect(isSorted(deck)).toBe(false);
+			const sorted = () => isSorted(deck, (card) => card.id);
+			expect(sorted).toThrow(Error);
 			done();
 		});
 
