@@ -1,12 +1,12 @@
 const _ = require('lodash');
 const Card = require('./Card');
-const CardPlayer = require('./CardPlayer');
+const Player = require('./Player');
 const isSorted = require('util/isSorted');
 
-describe('CardPlayer', () => {
+describe('Player', () => {
 	describe('bubbleSortLastCard', () => {
 		it('should sort the last card', (done) => {
-			const guy = new CardPlayer();
+			const guy = new Player();
 			guy.hand = _.range(5, 10).map((n) => new Card(n));
 			guy.hand.push(new Card(0));
 			guy.bubbleSortLastCard();
@@ -18,7 +18,7 @@ describe('CardPlayer', () => {
 
 	describe('addCardToHand', () => {
 		it('should sort added card into hand', (done) => {
-			const guy = new CardPlayer();
+			const guy = new Player();
 			for (let i = 10; i > 0; i--) {
 				const card = new Card(i);
 				guy.addCardToHand(card);
@@ -30,7 +30,7 @@ describe('CardPlayer', () => {
 	});
 
 	describe('playCardFromHand', () => {
-		const guy = new CardPlayer();
+		const guy = new Player();
 		for (let i = 10; i >= 0; i--) {
 			const card = new Card(i);
 			guy.addCardToHand(card);
@@ -53,7 +53,7 @@ describe('CardPlayer', () => {
 
 	describe('sortHand', () => {
 		it('should sort a shuffled hand', (done) => {
-			const guy = new CardPlayer();
+			const guy = new Player();
 			guy.hand = _.shuffle(_.range(10).map((n) => new Card(n)));
 			guy.sortHand();
 			const checkSort = () => isSorted(guy.hand, (x) => x.id);
@@ -65,7 +65,7 @@ describe('CardPlayer', () => {
 	describe('captureCards', () => {
 		it('should catch some cards without error', (done) => {
 			const cards = _.range(10).map((n) => new Card(n));
-			const guy = new CardPlayer();
+			const guy = new Player();
 			const check = () => guy.captureCards(cards);
 			expect(check).not.toThrow(Error);
 			done();
@@ -74,7 +74,7 @@ describe('CardPlayer', () => {
 
 	describe('clearCardsDangerously', () => {
 		it('should delete all cards', (done) => {
-			const guy = new CardPlayer();
+			const guy = new Player();
 			guy.hand = _.range(10).map((n) => new Card(n));
 			guy.captured = _.range(10).map((n) => new Card(n));
 			guy.clearCardsDangerously();
