@@ -1,8 +1,9 @@
 const Card = require('./Card');
-const radixSort = require('util/radixSort');
+const { radixSort } = require('util/radixSort');
+const faker = require('faker');
 
 class CardPlayer {
-	constructor(name = 'player1') {
+	constructor(name = faker.name.firstName()) {
 		this.name = name;
 		this.hand = [];
 		this.captured = [];
@@ -18,15 +19,15 @@ class CardPlayer {
 	 */
 	bubbleSortLastCard() {
 		const { hand, comparator } = this;
-		const len = this.length;
+		const len = hand.length;
 		if (len < 1) return this;
-		let i = len;
+		let i = len - 1;
 		while (0 < i) {
-			const swap = comparator(hand[i], hand[i - 1]) > 0;
+			const swap = comparator(hand[i - 1], hand[i]) > 0;
 			if (swap) {
 				[hand[i], hand[i - 1]] = [hand[i - 1], hand[i]];
-				return this;
-			}
+			} else break;
+			i--;
 		}
 		return this;
 	}
@@ -64,6 +65,45 @@ class CardPlayer {
 	sortHand() {
 		const hand = this.hand;
 		this.hand = radixSort(hand, (card) => card.id);
+	}
+
+	/**
+	 * Captures a hand of cards
+	 * @param {[Card]} hand
+	 * @returns {[Card]} – Array of captured cards
+	 */
+	captureCards(hand = []) {
+		const { captured } = this;
+		for (let i = 0; i < hand; i++) {
+			const card = hand[i];
+			if (!card instanceof Card) {
+				throw new Error(
+					`card must be instance of class Card; received card=${JSON.stringify(
+						card,
+					)}`,
+				);
+			} else {
+				captured.push(card);
+			}
+		}
+		return captured;
+	}
+
+	/**Clears all cards from this player
+	 * @returns {True}
+	 */
+	clearCardsDangerously() {
+		this.hand = [];
+		this.captured = [];
+		return true;
+	}
+
+	/**Clears cards only if the player's hand is empty
+	 * @returns {Boolean}
+	 */
+	clearCardsSafely() {
+		if (this.hand.length) return false;
+		else return this.clearCardsDangerously();
 	}
 }
 
