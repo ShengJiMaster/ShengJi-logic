@@ -67,5 +67,13 @@ describe('radixSort', () => {
 			expect(isSorted(sort)).toBe(true);
 			done();
 		});
+
+		it('should custom parse items', (done) => {
+			const nums = _.shuffle(_.range(50)).map((id) => ({ id }));
+			const sort = radixSort(nums, (num) => num.id);
+			const sortParse = sort.map((x) => x.id);
+			expect(isSorted(sortParse)).toBe(true);
+			done();
+		});
 	});
 });
