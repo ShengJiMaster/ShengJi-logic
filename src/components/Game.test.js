@@ -1,6 +1,5 @@
 const _ = require('lodash');
 const Game = require('./Game');
-const Player = require('./Player');
 
 describe('Game', () => {
 	describe('init', () => {
@@ -13,6 +12,17 @@ describe('Game', () => {
 		it('should requires minPlayers <= maxPlayers', (done) => {
 			const buildErr = () => new Game(10, 0);
 			expect(buildErr).toThrow(Error);
+			done();
+		});
+
+		it('should configure deck', (done) => {
+			const myGame = new Game(undefined, undefined, {
+				nDecks: 2,
+				deckOptions: { jokers: true },
+			});
+
+			const deck = myGame.deck;
+			// expect(deck.n).toEqual
 			done();
 		});
 	});
@@ -44,7 +54,14 @@ describe('Game', () => {
 			done();
 		});
 
-		it('should require a unique names', (done) => {
+		it('should not require that a name was provided', (done) => {
+			const myGame = new Game(4);
+			const addRando = () => myGame.addPlayer();
+			expect(addRando).not.toThrow(Error);
+			done();
+		});
+
+		it('should require a unique name', (done) => {
 			const myGame = new Game(4);
 			const addTony = () => myGame.addPlayer('tony');
 			addTony();
@@ -69,6 +86,41 @@ describe('Game', () => {
 			myGame.addPlayer('soprano');
 			myGame.removePlayer('tony');
 			expect(myGame.players.length).toEqual(1);
+			done();
+		});
+	});
+
+	describe('dealCards', () => {
+		it('should check if game has the required number of players', (done) => {
+			const myGame = new Game(4);
+			for (let i = 0; i < 2; i++) myGame.addPlayer();
+			const dealCards = () => myGame.dealCards(2);
+			expect(dealCards).toThrow(Error);
+			done();
+		});
+
+		it('should check if there are enough cards to deal nCards', (done) => {
+			const myGame = new Game(4);
+			for (let i = 0; i < 4; i++) myGame.addPlayer();
+			const dealCards = () => myGame.dealCards(100);
+			expect(dealCards).toThrow(Error);
+			done();
+		});
+
+		it('should deal cards when asked nicely', (done) => {
+			const nCards = 13;
+
+			const myGame = new Game(4);
+			for (let i = 0; i < 4; i++) myGame.addPlayer();
+			const dealCards = () => myGame.dealCards(nCards);
+			expect(dealCards).not.toThrow(Error);
+
+			const players = myGame.players;
+			for (let i = 0; i < players.length; i++) {
+				const hand = players[i].hand;
+				expect(hand.length).toEqual(nCards);
+			}
+
 			done();
 		});
 	});
