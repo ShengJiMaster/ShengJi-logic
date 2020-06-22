@@ -8,46 +8,88 @@ class Game {
 	 * @param {Number} minPlayers – Minimum number of players required
 	 * @param {Object=defaultOptions} options
 	 */
-	constructor(minPlayers = 1, options = {}) {
+	constructor(minPlayers = 1, maxPlayers = minPlayers, options = {}) {
+		if (typeof minPlayers !== 'number' || typeof maxPlayers !== 'number') {
+			throw new Error(
+				`minPlayers and maxPlayers must be numbers;
+        received: minPlayers=${minPlayers}; maxPlayers=${maxPlayers}`,
+			);
+		}
+
+		if (minPlayers > maxPlayers) {
+			throw new Error(
+				`Must have minPlayers <= maxPlayers;
+          received: minPlayers=${minPlayers}; maxPlayers=${maxPlayers}`,
+			);
+		}
+
 		const defaultOptions = {
 			nDecks: 1,
+			deckOptions: {},
 		};
-		const options = Object.assign(defaultOptions, options);
+
+		options = Object.assign({}, defaultOptions, options);
 		this.options = options;
 		this.minPlayers = minPlayers;
-		this.nDecks = nDecks;
+		this.maxPlayers = maxPlayers;
 		this.players = [];
 		this.table = [];
-		this.deck = new Deck(options.nDecks);
+		this.deck = new Deck(options.nDecks, options.deckOptions);
 	}
 
 	/**
-	 * Checks whether or not the game has enough players
+	 * Checks if the game has enough players
 	 * @returns {Boolean}
 	 */
-	get hasEnoughPlayers() {
+	get hasTooFewPlayers() {
 		const { minPlayers, players } = this;
-		return minPlayers <= players.length;
+		return players.length < minPlayers;
 	}
 
 	/**
-	 * Throws an error if there are not enough players to continue the game
+	 * Checks if the game has too many players
+	 * @returns {Boolean}
 	 */
-	throwErrorIfNotEnoughPlayers() {
-		const { minPlayers, players, hasEnoughPlayers } = this;
-		if (hasEnoughPlayers) {
+	get hasTooManyPlayers() {
+		const { maxPlayers, players } = this;
+		return maxPlayers < players.length;
+	}
+
+	/**
+	 * Stops the game if the number of players is too few or too many by throwing error
+	 */
+	stopGameIfTooFewOrManyPlayers() {
+		const {
+			minPlayers,
+			maxPlayers,
+			players,
+			hasTooFewPlayers,
+			hasTooManyPlayers,
+		} = this;
+		if (hasTooFewPlayers || hasTooManyPlayers) {
 			throw new Error(
-				`Game requires ${minPlayers} to player; received players=${players.length}`,
+				`Game requires ${minPlayers}<= nPlayers <=${maxPlayers}; received nPlayers=${players.length}`,
 			);
 		}
 	}
 
 	/**
-	 * Adds a player to the game
+	 * Checks if the game can accept another player
+	 * @returns {Boolean}
+	 */
+	get canAddAnotherPlayer() {
+		const { maxPlayers, players } = this;
+		return players.length < maxPlayers;
+	}
+
+	/**
+	 * Adds a player to the game, if there is enough room
 	 * @param {String} name
+	 * @returns {Number} – the new number of players
 	 */
 	addPlayer(name) {
-		const { players } = this;
+		const { players, canAddAnotherPlayer } = this;
+		if (!canAddAnotherPlayer) return;
 		for (let i = 0; i < players.length; i++) {
 			if (players[i].name === name) {
 				const names = players.map((p) => p.name);
@@ -56,12 +98,14 @@ class Game {
 				);
 			}
 		}
+		const player = new Player(name);
 		return players.push(player);
 	}
 
 	/**
 	 * Removes a player from the game
 	 * @param {String} name
+	 * @returns {Player} – the removed player
 	 */
 	removePlayer(name) {
 		const players = this.players;
@@ -73,12 +117,34 @@ class Game {
 	}
 
 	/**
+	 * Deals the cards on table to the players
+	 * @param {Number} nCards – number of cards to deal to each player
+	 */
+	dealCards(nCards) {
+		this.stopGameIfTooFewOrManyPlayers();
+		const { players, deck } = this;
+		if (deck.deck.length < nCards * players.length)
+			throw new Error(
+				`There are not enough cards left (deck.length=${deck.deck.length}) to deal nCards=${nCards} to ${players.length} players in this game`,
+			);
+
+		// deal cards
+		for (let c = 0; c < nCards; c++) {
+			for (let p = 0; p < players.length; p++) {
+				const player = players[p];
+				const card = deck.drawCard();
+				player.addCardToHand(card);
+			}
+		}
+	}
+
+	/**
 	 * Plays a card from a player's hand to the table
 	 * @param {Number} playerIndex – the index of the player in Game.players
 	 * @param {Number} cardIndex – the index of the card in Player.hand
 	 */
 	playCardToTable(playerIndex, cardIndex) {
-		this.throwErrorIfNotEnoughPlayers();
+		this.stopGameIfTooFewOrManyPlayers();
 		const { table, players } = this;
 		const player = players[playerIndex];
 		if (!player instanceof Player) return;
@@ -90,7 +156,7 @@ class Game {
 	 * @param {Number} playerIndex – the index of the player in Game.players
 	 */
 	captureCardsOnTable(playerIndex) {
-		this.throwErrorIfNotEnoughPlayers();
+		this.stopGameIfTooFewOrManyPlayers();
 		const { table, players } = this;
 		const player = players[playerIndex];
 		player.captureCards(table);
