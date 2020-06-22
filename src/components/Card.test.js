@@ -136,4 +136,20 @@ describe('Card', () => {
 			done();
 		});
 	});
+
+	describe('claimOwnership', () => {
+		const card = new Card(0);
+		it('should require name be a string', (done) => {
+			const checkClaim = () => card.claimOwnership(2001);
+			expect(checkClaim).toThrow(Error);
+			done();
+		});
+
+		it('should update owner', (done) => {
+			const name = 'player1';
+			card.claimOwnership(name);
+			expect(card.owner === name);
+			done();
+		});
+	});
 });

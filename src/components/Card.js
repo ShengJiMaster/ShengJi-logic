@@ -33,6 +33,7 @@ class Card {
 		this.id = id;
 		this.suits = defaultSuits;
 		this.ranks = defaultRanks;
+		this.owner = null;
 	}
 
 	/**
@@ -105,6 +106,12 @@ class Card {
 		if (s === trumpSuit) return 14 + r;
 		if (s === leadSuit) return 1 + r;
 		else return 0;
+	}
+
+	claimOwnership(playerName) {
+		if (typeof playerName !== 'string')
+			throw new Error(`playerName must be a string; received=${playerName}`);
+		this.owner = playerName;
 	}
 }
 
