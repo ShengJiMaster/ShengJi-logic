@@ -148,7 +148,7 @@ describe('Card', () => {
 		it('should update owner', (done) => {
 			const name = 'player1';
 			card.claimOwnership(name);
-			expect(card.owner === name);
+			expect(card.owner).toEqual(name);
 			done();
 		});
 	});
