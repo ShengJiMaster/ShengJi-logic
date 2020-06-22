@@ -70,6 +70,9 @@ class Card {
 		return { id, rank, suit };
 	}
 
+	/**
+	 * The maximum relative value of a card in a trick; e.g. if maxTrickRank - 10, then the possible trickRanks are 0–10 inclusive
+	 */
 	get maxTrickRank() {
 		return 32;
 	}
