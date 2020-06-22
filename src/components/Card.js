@@ -108,6 +108,10 @@ class Card {
 		else return 0;
 	}
 
+	/**
+	 * Marks the owner of this card. Assumes that the provided name is a unique identifier
+	 * @param {String} playerName
+	 */
 	claimOwnership(playerName) {
 		if (typeof playerName !== 'string')
 			throw new Error(`playerName must be a string; received=${playerName}`);
