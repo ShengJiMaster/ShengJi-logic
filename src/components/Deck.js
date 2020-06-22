@@ -12,6 +12,7 @@ class Deck {
 		};
 		this.options = Object.assign(defaultOptions, options);
 		this.n = n;
+		this.deck = [];
 		this.initialize();
 	}
 
