@@ -17,6 +17,7 @@
 		"util": "file:./util"
 	},
 	"devDependencies": {
-		"jest": "^26.0.1"
+		"jest": "^26.0.1",
+		"sinon": "^9.0.2"
 	}
 }
