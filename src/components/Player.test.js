@@ -76,6 +76,23 @@ describe('Player', () => {
 		});
 	});
 
+	describe('updateScoreWithCard', () => {
+		const myPlayer = new Player();
+		myPlayer.appraiseCard = () => 1;
+		const spy = sinon.spy(myPlayer, 'appraiseCard');
+		myPlayer.updateScoreWithCard(new Card(0));
+		myPlayer.updateScoreWithCard(new Card(0));
+		it('should call appraiseCard', (done) => {
+			expect(spy.callCount).toEqual(2);
+			done();
+		});
+
+		it('should update the score', (done) => {
+			expect(myPlayer.score).toEqual(2);
+			done();
+		});
+	});
+
 	describe('captureCards', () => {
 		it('should catch some cards without error', (done) => {
 			const cards = _.range(10).map((n) => new Card(n));
@@ -85,15 +102,15 @@ describe('Player', () => {
 			done();
 		});
 
-		// it('should call appraiseCard', (done) => {
-		// 	const appraiseCard = () => {};
-		// 	const cards = _.range(10).map((n) => new Card(n));
-		// 	const guy = new Player('guy', { appraiseCard });
-		// 	const spy = sinon.spy(guy.options.appraiseCard);
-		// 	guy.captureCards(cards);
-		// 	expect(spy.called).toBe(true);
-		// 	done();
-		// });
+		it('should call updateScoreWithCard', (done) => {
+			const nCards = 10;
+			const cards = _.range(nCards).map((n) => new Card(n));
+			const guy = new Player();
+			const spy = sinon.spy(guy, 'updateScoreWithCard');
+			guy.captureCards(cards);
+			expect(spy.callCount).toEqual(nCards);
+			done();
+		});
 	});
 
 	describe('clearCardsDangerously', () => {

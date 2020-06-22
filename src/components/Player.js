@@ -11,6 +11,7 @@ class Player {
 		this.name = name;
 		this.hand = [];
 		this.captured = [];
+		this.score = 0;
 	}
 
 	/**Compares cards by their ids*/
@@ -75,22 +76,46 @@ class Player {
 	}
 
 	/**
+	 * Calculates the value of a card
+	 * @param {Card} card
+	 */
+	appraiseCard(card) {
+		return 0;
+	}
+
+	/**
+	 * Updates the player's score depending on a specific card
+	 * @param {Card} card
+	 */
+	updateScoreWithCard(card) {
+		if (!card instanceof Card)
+			throw new Error('The card must be instance of Card');
+		const cardVal = this.appraiseCard(card);
+		this.score += cardVal;
+	}
+
+	/**
 	 * Captures a hand of cards
 	 * @param {[Card]} hand
 	 * @returns {[Card]} – Array of captured cards
 	 */
 	captureCards(hand = []) {
 		const { captured } = this;
-		for (let i = 0; i < hand; i++) {
+		for (let i = 0; i < hand.length; i++) {
 			const card = hand[i];
 			if (!card instanceof Card) {
 				throw new Error(
 					'All captured cards must be instances of the class Card',
 				);
-			} else {
-				captured.push(card);
 			}
 		}
+
+		for (let i = 0; i < hand.length; i++) {
+			const card = hand[i];
+			this.updateScoreWithCard(card);
+			captured.push(card);
+		}
+
 		return captured;
 	}
 
