@@ -1,9 +1,13 @@
 const _ = require('lodash');
+const sinon = require('sinon');
+
 const Card = require('./Card');
 const Player = require('./Player');
 const isSorted = require('util/isSorted');
 
 describe('Player', () => {
+	describe('init', () => {});
+
 	describe('bubbleSortLastCard', () => {
 		it('should sort the last card', (done) => {
 			const guy = new Player();
@@ -70,6 +74,16 @@ describe('Player', () => {
 			expect(check).not.toThrow(Error);
 			done();
 		});
+
+		// it('should call appraiseCard', (done) => {
+		// 	const appraiseCard = () => {};
+		// 	const cards = _.range(10).map((n) => new Card(n));
+		// 	const guy = new Player('guy', { appraiseCard });
+		// 	const spy = sinon.spy(guy.options.appraiseCard);
+		// 	guy.captureCards(cards);
+		// 	expect(spy.called).toBe(true);
+		// 	done();
+		// });
 	});
 
 	describe('clearCardsDangerously', () => {
