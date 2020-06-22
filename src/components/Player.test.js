@@ -52,7 +52,7 @@ describe('Player', () => {
 
 		it('should remove card from hand', (done) => {
 			const len = guy.hand.length;
-			const [card] = guy.playCardFromHand(1);
+			const card = guy.playCardFromHand(1);
 			expect(card.id).toEqual(1);
 			expect(guy.hand.length).toEqual(len - 1);
 			done();

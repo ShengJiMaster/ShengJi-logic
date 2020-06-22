@@ -60,7 +60,7 @@ class Player {
 	 */
 	playCardFromHand(i, table = []) {
 		const { hand } = this;
-		const card = hand.splice(i, 1);
+		const [card] = hand.splice(i, 1);
 		if (!card instanceof Card) return;
 		table.push(card);
 		return card;
