@@ -1,3 +1,23 @@
+/**Default suits */
+const defaultSuits = ['clubs', 'diamonds', 'hearts', 'spades', 'joker'];
+
+/**Default ranks */
+const defaultRanks = [
+	'2',
+	'3',
+	'4',
+	'5',
+	'6',
+	'7',
+	'8',
+	'9',
+	'10',
+	'jack',
+	'queen',
+	'king',
+	'ace',
+];
+
 /** Class respresenting a playing card */
 class Card {
 	/**
@@ -11,22 +31,8 @@ class Card {
 			);
 
 		this.id = id;
-		this.suits = ['clubs', 'diamonds', 'hearts', 'spades', 'joker'];
-		this.ranks = [
-			'2',
-			'3',
-			'4',
-			'5',
-			'6',
-			'7',
-			'8',
-			'9',
-			'10',
-			'jack',
-			'queen',
-			'king',
-			'ace',
-		];
+		this.suits = defaultSuits;
+		this.ranks = defaultRanks;
 	}
 
 	/**
