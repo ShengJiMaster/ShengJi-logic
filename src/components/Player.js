@@ -38,7 +38,7 @@ class Player {
 	}
 
 	/**
-	 * Adds and sorts card into the player's hand
+	 * Adds and sorts card into the player's hand. Also claims ownership of the card
 	 * @returns {Player}
 	 */
 	addCardToHand(card) {
@@ -47,7 +47,7 @@ class Player {
 			throw new Error(
 				`card must be instance of the Card class; received card=${card}`,
 			);
-		card.owner = name;
+		card.claimOwnership(name);
 		hand.push(card);
 		return this.bubbleSortLastCard();
 	}

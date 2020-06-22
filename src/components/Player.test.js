@@ -31,6 +31,16 @@ describe('Player', () => {
 			expect(checkSort).not.toThrow(Error);
 			done();
 		});
+
+		it('should claim ownership of cards added to hand', (done) => {
+			const guy = new Player();
+			for (let i = 10; i > 0; i--) {
+				const card = new Card(i);
+				guy.addCardToHand(card);
+				expect(card.owner).toEqual(guy.name);
+			}
+			done();
+		});
 	});
 
 	describe('playCardFromHand', () => {
