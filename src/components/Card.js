@@ -1,3 +1,23 @@
+/**Default suits */
+const defaultSuits = ['clubs', 'diamonds', 'hearts', 'spades', 'joker'];
+
+/**Default ranks */
+const defaultRanks = [
+	'2',
+	'3',
+	'4',
+	'5',
+	'6',
+	'7',
+	'8',
+	'9',
+	'10',
+	'jack',
+	'queen',
+	'king',
+	'ace',
+];
+
 /** Class respresenting a playing card */
 class Card {
 	/**
@@ -11,22 +31,9 @@ class Card {
 			);
 
 		this.id = id;
-		this.suits = ['clubs', 'diamonds', 'hearts', 'spades', 'joker'];
-		this.ranks = [
-			'2',
-			'3',
-			'4',
-			'5',
-			'6',
-			'7',
-			'8',
-			'9',
-			'10',
-			'jack',
-			'queen',
-			'king',
-			'ace',
-		];
+		this.suits = defaultSuits;
+		this.ranks = defaultRanks;
+		this.owner = null;
 	}
 
 	/**
@@ -63,6 +70,9 @@ class Card {
 		return { id, rank, suit };
 	}
 
+	/**
+	 * The maximum relative value of a card in a trick; e.g. if maxTrickRank - 10, then the possible trickRanks are 0–10 inclusive
+	 */
 	get maxTrickRank() {
 		return 32;
 	}
@@ -99,6 +109,16 @@ class Card {
 		if (s === trumpSuit) return 14 + r;
 		if (s === leadSuit) return 1 + r;
 		else return 0;
+	}
+
+	/**
+	 * Marks the owner of this card. Assumes that the provided name is a unique identifier
+	 * @param {String} playerName
+	 */
+	claimOwnership(playerName) {
+		if (typeof playerName !== 'string')
+			throw new Error(`playerName must be a string; received=${playerName}`);
+		this.owner = playerName;
 	}
 }
 

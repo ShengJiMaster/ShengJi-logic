@@ -2,11 +2,16 @@ const Card = require('./Card');
 const { radixSort } = require('util/radixSort');
 const faker = require('faker');
 
-class CardPlayer {
-	constructor(name = faker.name.firstName()) {
+class Player {
+	/**
+	 * @param {String} name
+	 * @param {Object=defaultOptions} options
+	 */
+	constructor(name = faker.name.firstName(), options = {}) {
 		this.name = name;
 		this.hand = [];
 		this.captured = [];
+		this.score = 0;
 	}
 
 	/**Compares cards by their ids*/
@@ -14,8 +19,9 @@ class CardPlayer {
 		return a.id - b.id;
 	}
 
-	/**Sorts the last card into the rest of the sorted hand
-	 * @returns {CardPlayer}
+	/**
+	 * Sorts the last card into the rest of the sorted hand
+	 * @returns {Player}
 	 */
 	bubbleSortLastCard() {
 		const { hand, comparator } = this;
@@ -32,28 +38,30 @@ class CardPlayer {
 		return this;
 	}
 
-	/**Adds and sorts card into the player's hand
-	 * @returns {CardPlayer}
+	/**
+	 * Adds and sorts card into the player's hand. Also claims ownership of the card
+	 * @returns {Player}
 	 */
 	addCardToHand(card) {
-		const { hand } = this;
+		const { hand, name } = this;
 		if (!card instanceof Card)
 			throw new Error(
 				`card must be instance of the Card class; received card=${card}`,
 			);
+		card.claimOwnership(name);
 		hand.push(card);
 		return this.bubbleSortLastCard();
 	}
 
 	/**
-	 * Plays a card from player's hand
+	 * Plays a card from player's hand to the table
 	 * @param {Number} i
-	 * @param {Array} – The table from Deck class
-	 * @returns {Card}
+	 * @param {[Array]} – The table from Deck class
+	 * @returns {Card} – The played card
 	 */
 	playCardFromHand(i, table = []) {
 		const { hand } = this;
-		const card = hand.splice(i, 1);
+		const [card] = hand.splice(i, 1);
 		if (!card instanceof Card) return;
 		table.push(card);
 		return card;
@@ -68,28 +76,51 @@ class CardPlayer {
 	}
 
 	/**
+	 * Calculates the value of a card
+	 * @param {Card} card
+	 */
+	appraiseCard(card) {
+		return 0;
+	}
+
+	/**
+	 * Updates the player's score depending on a specific card
+	 * @param {Card} card
+	 */
+	updateScoreWithCard(card) {
+		if (!card instanceof Card)
+			throw new Error('The card must be instance of Card');
+		const cardVal = this.appraiseCard(card);
+		this.score += cardVal;
+	}
+
+	/**
 	 * Captures a hand of cards
 	 * @param {[Card]} hand
 	 * @returns {[Card]} – Array of captured cards
 	 */
 	captureCards(hand = []) {
 		const { captured } = this;
-		for (let i = 0; i < hand; i++) {
+		for (let i = 0; i < hand.length; i++) {
 			const card = hand[i];
 			if (!card instanceof Card) {
 				throw new Error(
-					`card must be instance of class Card; received card=${JSON.stringify(
-						card,
-					)}`,
+					'All captured cards must be instances of the class Card',
 				);
-			} else {
-				captured.push(card);
 			}
 		}
+
+		for (let i = 0; i < hand.length; i++) {
+			const card = hand[i];
+			this.updateScoreWithCard(card);
+			captured.push(card);
+		}
+
 		return captured;
 	}
 
-	/**Clears all cards from this player
+	/**
+	 * Clears all cards from this player
 	 * @returns {True}
 	 */
 	clearCardsDangerously() {
@@ -98,7 +129,8 @@ class CardPlayer {
 		return true;
 	}
 
-	/**Clears cards only if the player's hand is empty
+	/**
+	 * Clears cards only if the player's hand is empty
 	 * @returns {Boolean}
 	 */
 	clearCardsSafely() {
@@ -107,4 +139,4 @@ class CardPlayer {
 	}
 }
 
-module.exports = CardPlayer;
+module.exports = Player;

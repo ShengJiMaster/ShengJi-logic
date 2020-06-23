@@ -22,6 +22,9 @@ const countSort = (arr, exp = 1, parse = (x) => x) => {
 		const n = arr[i];
 		const d = getDigit(n, exp, parse);
 		temp[d].push(n);
+
+		// clear some memory
+		arr[i] = null;
 	}
 	arr = [];
 	for (let i = 0; i < temp.length; i++) {

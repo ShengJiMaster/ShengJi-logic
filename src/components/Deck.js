@@ -3,15 +3,16 @@ const _ = require('lodash');
 
 /**Creates a Deck of Cards */
 class Deck {
-	constructor(n = 1, options = {}) {
-		if (typeof n !== 'number' || n < 1)
+	constructor(nDecks = 1, options = {}) {
+		if (typeof nDecks !== 'number' || nDecks < 1)
 			throw new Error(`deck must be number 0 < n; received n=${n}`);
 
 		const defaultOptions = {
 			jokers: false,
 		};
 		this.options = Object.assign(defaultOptions, options);
-		this.n = n;
+		this.nDecks = nDecks;
+		this.deck = [];
 		this.initialize();
 	}
 
@@ -27,10 +28,10 @@ class Deck {
 	 */
 	buildNewDeck() {
 		this.deck = [];
-		const { n, deck } = this;
+		const { nDecks, deck } = this;
 		const { jokers } = this.options;
 		const cards = jokers ? 54 : 52;
-		for (let d = 0; d < n; d++) {
+		for (let d = 0; d < nDecks; d++) {
 			for (let c = 0; c < cards; c++) {
 				const card = new Card(c);
 				deck.push(card);
