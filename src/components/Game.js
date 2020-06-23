@@ -140,6 +140,17 @@ class Game {
   }
 
   /**
+   * @param {*} player
+   */
+  throwErrorIfNotInstanceOfPlayer(player) {
+    if (!(player instanceof Player)) {
+      throw new Error(
+        `The provided argument must be instance of Player; received type=${typeof player}; val=${player}`,
+      );
+    }
+  }
+
+  /**
    * Plays a card from a player's hand to the table
    * @param {Number} playerIndex – the index of the player in Game.players
    * @param {Number} cardIndex – the index of the card in Player.hand
@@ -148,11 +159,7 @@ class Game {
     this.stopGameIfTooFewOrManyPlayers();
     const { table, players } = this;
     const player = players[playerIndex];
-    if (!player instanceof Player) {
-      throw new Error(
-        `player does not exist; playerIndex=${playerIndex}; nPlayers=${players.length}`,
-      );
-    }
+    this.throwErrorIfNotInstanceOfPlayer(player);
     return player.playCardFromHand(cardIndex, table);
   }
 
@@ -164,11 +171,7 @@ class Game {
     this.stopGameIfTooFewOrManyPlayers();
     const { table, players } = this;
     const player = players[playerIndex];
-    if (!player instanceof Player) {
-      throw new Error(
-        `player does not exist; playerIndex=${playerIndex}; nPlayers=${players.length}`,
-      );
-    }
+    this.throwErrorIfNotInstanceOfPlayer(player);
     return player.captureCards(table);
   }
 
