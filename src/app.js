@@ -3,3 +3,5 @@ class ShengJi {
 		this.players = players;
 	}
 }
+
+module.exports = ShengJi;
