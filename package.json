@@ -1,23 +1,23 @@
 {
-	"name": "shengji",
-	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
-	"scripts": {
-		"test": "jest",
-		"test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
-	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
-	"dependencies": {
-		"faker": "^4.1.0",
-		"lodash": "^4.17.15",
-		"redux": "^4.0.5",
-		"util": "file:./util"
-	},
-	"devDependencies": {
-		"jest": "^26.0.1",
-		"sinon": "^9.0.2"
-	}
+  "name": "shengji",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "faker": "^4.1.0",
+    "lodash": "^4.17.15",
+    "redux": "^4.0.5",
+    "util": "file:./util"
+  },
+  "devDependencies": {
+    "jest": "^26.0.1",
+    "sinon": "^9.0.2"
+  }
 }
