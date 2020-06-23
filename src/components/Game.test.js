@@ -1,5 +1,7 @@
 const _ = require('lodash');
 const Game = require('./Game');
+const Player = require('./Player');
+const Card = require('./Card');
 
 describe('Game', () => {
 	describe('init', () => {
@@ -21,8 +23,8 @@ describe('Game', () => {
 				deckOptions: { jokers: true },
 			});
 
-			const deck = myGame.deck;
-			// expect(deck.n).toEqual
+			const deck = myGame.deck.deck;
+			expect(deck.length).toEqual(54 * 2);
 			done();
 		});
 	});
@@ -48,8 +50,8 @@ describe('Game', () => {
 	describe('addPlayer', () => {
 		it('should add a new player', (done) => {
 			const myGame = new Game(4);
-			const res = myGame.addPlayer('player1');
-			expect(res).toEqual(1);
+			const player = myGame.addPlayer('player1');
+			expect(player).toBeInstanceOf(Player);
 			expect(myGame.players.length).toEqual(1);
 			done();
 		});
@@ -120,7 +122,99 @@ describe('Game', () => {
 				const hand = players[i].hand;
 				expect(hand.length).toEqual(nCards);
 			}
+			done();
+		});
+	});
 
+	describe('playCardToTable', () => {
+		it('should remove the card from the players hande', (done) => {
+			const myGame = new Game(4);
+			for (let i = 0; i < 4; i++) myGame.addPlayer();
+			const nCards = 2;
+			myGame.dealCards(nCards);
+			const card = myGame.playCardToTable(0, 0);
+			const player = myGame.players[0];
+			const hand = player.hand;
+			expect(hand.includes(card)).toBe(false);
+			done();
+		});
+
+		it('should return a card after successful removal', (done) => {
+			const myGame = new Game(2);
+			for (let i = 0; i < 2; i++) myGame.addPlayer();
+			const nCards = 2;
+			myGame.dealCards(nCards);
+			const card = myGame.playCardToTable(0, 0);
+			expect(card).toBeInstanceOf(Card);
+			done();
+		});
+	});
+
+	describe('captureCardsForPlayer', () => {
+		it('should check that the playerIndex refers to player', (done) => {
+			const myGame = new Game(2);
+			for (let i = 0; i < 2; i++) myGame.addPlayer();
+			myGame.table = _.range(10).map((n) => new Card(n));
+			const throwErr = () => myGame.captureCardsForPlayer(3);
+			expect(throwErr).toThrow(Error);
+			done();
+		});
+
+		it('should give the cards to a player', (done) => {
+			const myGame = new Game(2);
+			for (let i = 0; i < 2; i++) myGame.addPlayer();
+			const table = _.range(10).map((n) => new Card(n));
+			myGame.table = table;
+			myGame.captureCardsForPlayer(0);
+			const player = myGame.players[0];
+			expect(player.captured).toEqual(table);
+			done();
+		});
+	});
+
+	describe('restartGameDangerously', () => {
+		it('should clear all cards from players', (done) => {
+			const myGame = new Game(4);
+			for (let i = 0; i < 4; i++) {
+				const player = myGame.addPlayer();
+				player.cards = _.range(5).map((n) => new Card(n));
+			}
+			myGame.restartGameDangerously();
+
+			for (let i = 0; i < 4; i++) {
+				const player = myGame.players[i];
+				expect(player.hand.length).toEqual(0);
+			}
+			done();
+		});
+
+		it('should clear the table', (done) => {
+			const myGame = new Game(4);
+			myGame.table = _.range(5).map((n) => new Card(n));
+			myGame.restartGameDangerously();
+			expect(myGame.table.length).toEqual(0);
+			done();
+		});
+
+		it('should rebuild the deck', (done) => {
+			const myGame = new Game(4);
+			const first = myGame.deck.deck;
+			myGame.restartGameDangerously();
+			const second = myGame.deck.deck;
+			expect(first).not.toMatchObject(second);
+			done();
+		});
+	});
+
+	describe('restartGameSafely', () => {
+		it('should not be called when some player still has cards', (done) => {
+			const myGame = new Game(2);
+			for (let i = 0; i < 2; i++) {
+				const player = myGame.addPlayer();
+				player.hand = _.range(3).map((n) => new Card(n));
+			}
+			const throwsErr = () => myGame.restartGameSafely();
+			expect(throwsErr).toThrow(Error);
 			done();
 		});
 	});

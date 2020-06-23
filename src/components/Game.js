@@ -99,7 +99,8 @@ class Game {
 			}
 		}
 		const player = new Player(name);
-		return players.push(player);
+		players.push(player);
+		return player;
 	}
 
 	/**
@@ -147,19 +148,53 @@ class Game {
 		this.stopGameIfTooFewOrManyPlayers();
 		const { table, players } = this;
 		const player = players[playerIndex];
-		if (!player instanceof Player) return;
-		return player.playCardToTable(cardIndex, table);
+		if (!player instanceof Player) {
+			throw new Error(
+				`player does not exist; playerIndex=${playerIndex}; nPlayers=${players.length}`,
+			);
+		}
+		return player.playCardFromHand(cardIndex, table);
 	}
 
 	/**
-	 * Specified player captures all the cards on the table
+	 * A specified player captures all the cards on the table
 	 * @param {Number} playerIndex – the index of the player in Game.players
 	 */
-	captureCardsOnTable(playerIndex) {
+	captureCardsForPlayer(playerIndex) {
 		this.stopGameIfTooFewOrManyPlayers();
 		const { table, players } = this;
 		const player = players[playerIndex];
-		player.captureCards(table);
+		if (!player instanceof Player) {
+			throw new Error(
+				`player does not exist; playerIndex=${playerIndex}; nPlayers=${players.length}`,
+			);
+		}
+		return player.captureCards(table);
+	}
+
+	/**Clears all cards from table and players; and rebuilds the deck */
+	restartGameDangerously() {
+		const { players, deck } = this;
+		for (let i = 0; i < players.length; i++) {
+			const player = players[i];
+			player.clearCardsDangerously();
+		}
+		this.table = [];
+		deck.initialize();
+	}
+
+	/**Only restarts game IF no player has any cards left */
+	restartGameSafely() {
+		const { players } = this;
+		for (let i = 0; i < players.length; i++) {
+			const player = players[i];
+			if (player.hand.length) {
+				throw new Error(
+					`Cannot restart game. player${i} with name=${player.name} still has cards in hand`,
+				);
+			}
+		}
+		this.restartGameDangerously();
 	}
 }
 
