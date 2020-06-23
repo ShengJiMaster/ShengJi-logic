@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ShengJiMaster/ShengJi-logic.svg?branch=master)](https://travis-ci.org/ShengJiMaster/ShengJi-logic)
 
-This is the game logic for playing ShengJi
+Game logic for ShengJi, the classic Chinese trick-taking card game!
 
 ### Sources 
 
