@@ -38,12 +38,20 @@ class Game {
   }
 
   /**
+   * Reads how many players are currently in the game
+   * @returns {Number}
+   */
+  get nPlayers() {
+    return this.players.length;
+  }
+
+  /**
    * Checks if the game has enough players
    * @returns {Boolean}
    */
   get hasTooFewPlayers() {
-    const { minPlayers, players } = this;
-    return players.length < minPlayers;
+    const { minPlayers, nPlayers } = this;
+    return nPlayers < minPlayers;
   }
 
   /**
@@ -51,8 +59,8 @@ class Game {
    * @returns {Boolean}
    */
   get hasTooManyPlayers() {
-    const { maxPlayers, players } = this;
-    return maxPlayers < players.length;
+    const { maxPlayers, nPlayers } = this;
+    return maxPlayers < nPlayers;
   }
 
   /**
@@ -62,13 +70,13 @@ class Game {
     const {
       minPlayers,
       maxPlayers,
-      players,
+      nPlayers,
       hasTooFewPlayers,
       hasTooManyPlayers,
     } = this;
     if (hasTooFewPlayers || hasTooManyPlayers) {
       throw new Error(
-        `Game requires ${minPlayers}<= nPlayers <=${maxPlayers}; received nPlayers=${players.length}`,
+        `Game requires ${minPlayers}<= nPlayers <=${maxPlayers}; received nPlayers=${nPlayers}`,
       );
     }
   }
@@ -78,8 +86,8 @@ class Game {
    * @returns {Boolean}
    */
   get canAddAnotherPlayer() {
-    const { maxPlayers, players } = this;
-    return players.length < maxPlayers;
+    const { maxPlayers, nPlayers } = this;
+    return nPlayers < maxPlayers;
   }
 
   /**
