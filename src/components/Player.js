@@ -19,6 +19,13 @@ class Player {
     return a.id - b.id;
   }
 
+  /**Throws and error if the card is not an instance of Card */
+  throwErrorIfNotInstanceOfCard(card) {
+    if (!(card instanceof Card)) {
+      throw new Error('The provided card must be an instance of Card');
+    }
+  }
+
   /**
    * Sorts the last card into the rest of the sorted hand
    * @returns {Player}
@@ -43,11 +50,8 @@ class Player {
    * @returns {Player}
    */
   addCardToHand(card) {
+    this.throwErrorIfNotInstanceOfCard(card);
     const { hand, name } = this;
-    if (!card instanceof Card)
-      throw new Error(
-        `card must be instance of the Card class; received card=${card}`,
-      );
     card.claimOwnership(name);
     hand.push(card);
     return this.bubbleSortLastCard();
@@ -80,6 +84,7 @@ class Player {
    * @param {Card} card
    */
   appraiseCard(card) {
+    this.throwErrorIfNotInstanceOfCard(card);
     return 0;
   }
 
@@ -88,8 +93,7 @@ class Player {
    * @param {Card} card
    */
   updateScoreWithCard(card) {
-    if (!card instanceof Card)
-      throw new Error('The card must be instance of Card');
+    this.throwErrorIfNotInstanceOfCard(card);
     const cardVal = this.appraiseCard(card);
     this.score += cardVal;
   }
@@ -103,11 +107,7 @@ class Player {
     const { captured } = this;
     for (let i = 0; i < hand.length; i++) {
       const card = hand[i];
-      if (!card instanceof Card) {
-        throw new Error(
-          'All captured cards must be instances of the class Card',
-        );
-      }
+      this.throwErrorIfNotInstanceOfCard(card);
     }
 
     for (let i = 0; i < hand.length; i++) {

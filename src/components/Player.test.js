@@ -8,6 +8,21 @@ const isSorted = require('util/isSorted');
 describe('Player', () => {
   describe('init', () => {});
 
+  describe('throwErrorIfNotInstanceOfCard', () => {
+    const func = new Player().throwErrorIfNotInstanceOfCard;
+    it('should know to throw err', (done) => {
+      const testThrow = () => func({ name: 'not a card' });
+      expect(testThrow).toThrow(Error);
+      done();
+    });
+
+    it('should know not to throw err', (done) => {
+      const testThrow = () => func(new Card(0));
+      expect(testThrow).not.toThrow(Error);
+      done();
+    });
+  });
+
   describe('bubbleSortLastCard', () => {
     it('should sort the last card', (done) => {
       const guy = new Player();
