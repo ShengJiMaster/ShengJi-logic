@@ -72,11 +72,63 @@ class Player {
   }
 
   /**
-   * Uses radix sort to sort hand. Only used when recreating game from commit log after crash
+   * Plays many cards from hand to the table
+   * @param {[Number]} cardIndeces
+   * @param {Array} table
+   * @param {[Function]} parseCardGroup – Used to identify a specific category of card groups. May throw an error if the card group does not fit into any category
+   */
+  playCardGroupFromHand(
+    cardIndeces = [],
+    table = [],
+    parseCardGroup = (cards) => cards,
+  ) {
+    const { hand } = this;
+    let cardGroup = [];
+
+    // get and validate cards
+    for (let i = 0; i < cardIndeces.length; i++) {
+      const cardIndex = cardIndeces[i];
+      const card = hand[cardIndex];
+      this.throwErrorIfNotInstanceOfCard(card);
+      cardGroup.push(card);
+    }
+
+    cardGroup = parseCardGroup(cardGroup);
+
+    // delete cards from hand
+    for (let i = 0; i < cardIndeces.length; i++) {
+      const cardIndex = cardIndeces[i];
+      hand[cardIndex] = null;
+    }
+
+    table.push(cardGroup);
+    this.sortHandAndClean();
+
+    return cardGroup;
+  }
+
+  /**
+   * Uses radix sort to sort hand and clears nulls from the hand. Assumes that all cards in hand are instanceof Card
    */
   sortHand(parse = (card) => card.id) {
-    const hand = this.hand;
-    this.hand = radixSort(hand, parse);
+    this.hand = radixSort(this.hand.slice(), parse);
+  }
+
+  /**
+   * Invokes sort hand and removes all non instances of Card from the hand
+   */
+  sortHandAndClean() {
+    this.sortHand((card) => {
+      if (!(card instanceof Card)) return 99;
+      else return card.id;
+    });
+
+    const { hand } = this;
+    let i = hand.length - 1;
+    while (hand[i] === null) {
+      hand.pop();
+      i--;
+    }
   }
 
   /**

@@ -80,13 +80,84 @@ describe('Player', () => {
     });
   });
 
+  describe('playCardGroupFromHand', () => {
+    const hand = _.range(10).map((n) => new Card(n));
+    const myPlayer = new Player();
+    myPlayer.hand = hand.slice();
+    const cardIndeces = [0, 2, 4];
+    const table = [];
+    let shouldBeCardGroup;
+    const cardGroup = myPlayer.playCardGroupFromHand(
+      cardIndeces,
+      table,
+      (x) => {
+        shouldBeCardGroup = x;
+        return x;
+      },
+    );
+
+    it('should return the played cards', (done) => {
+      expect(cardGroup.map((card) => card.id)).toEqual(cardIndeces);
+      done();
+    });
+
+    it('should push the played cards to a provided table', (done) => {
+      expect(table[0]).toEqual(cardGroup);
+      done();
+    });
+
+    it('should remove the cards from the players hand', (done) => {
+      expect(myPlayer.hand).not.toEqual(expect.arrayContaining(cardGroup));
+      done();
+    });
+
+    it('should invoke parseCardGroup on cardGroup', (done) => {
+      expect(shouldBeCardGroup).toEqual(cardGroup);
+      done();
+    });
+    const anotherGuy = new Player();
+    anotherGuy.hand = _.range(15, 20).map((n) => new Card(n));
+    const prevHand = anotherGuy.hand.slice();
+
+    it('should throw an error if any of teh cardIndeces are invalid', (done) => {
+      const playCardGroup = () => anotherGuy.playCardGroupFromHand([0, 1, 999]);
+      expect(playCardGroup).toThrow(Error);
+      done();
+    });
+
+    it('should not play any cards if at least one of the cardIndeces is valid', (done) => {
+      expect(anotherGuy.hand).toEqual(prevHand);
+      done();
+    });
+  });
+
   describe('sortHand', () => {
+    const guy = new Player();
+    guy.hand = _.shuffle(_.range(10).map((n) => new Card(n)));
+
+    guy.sortHand();
     it('should sort a shuffled hand', (done) => {
-      const guy = new Player();
-      guy.hand = _.shuffle(_.range(10).map((n) => new Card(n)));
-      guy.sortHand();
       const checkSort = () => isSorted(guy.hand, (x) => x.id);
       expect(checkSort).not.toThrow(Error);
+      done();
+    });
+  });
+
+  describe('sortHandAndClean', () => {
+    const guy = new Player();
+    guy.hand = _.shuffle(_.range(10).map((n) => new Card(n)));
+    guy[5] = null;
+    guy[7] = 'tony';
+    guy.sortHandAndClean();
+
+    it('should sort a shuffled hand', (done) => {
+      const checkSort = () => isSorted(guy.hand, (x) => x.id);
+      expect(checkSort).not.toThrow(Error);
+      done();
+    });
+
+    it('should remove all non-Cards from hand', (done) => {
+      expect(guy.hand).not.toEqual(expect.arrayContaining([null]));
       done();
     });
   });
