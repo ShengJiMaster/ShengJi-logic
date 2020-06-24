@@ -59,20 +59,25 @@ class Player {
 
   /**
    * Plays a card from player's hand to the table
-   * @param {Number} i
-   * @param {[Array]} – The table from Deck class
+   * @param {Number} cardIndex – Index of the card in hand
+   * @param {[Array]} table – The table from Deck class
+   * @param {[Function]} parseCard – In case mutating the card is necessary for the game
    * @returns {Card} – The played card
    */
-  playCardFromHand(cardIndex, table = []) {
+  playCardFromHand(cardIndex, table = [], parseCard = (x) => x) {
     const { hand } = this;
-    const [card] = hand.splice(cardIndex, 1);
-    if (!card instanceof Card) return;
+    let card = hand[cardIndex];
+    this.throwErrorIfNotInstanceOfCard(card);
+
+    card = parseCard(card);
+
+    hand.splice(cardIndex, 1);
     table.push(card);
     return card;
   }
 
   /**
-   * Plays many cards from hand to the table
+   * Plays multiple cards from hand to the table
    * @param {[Number]} cardIndeces
    * @param {Array} table
    * @param {[Function]} parseCardGroup – Used to identify a specific category of card groups. May throw an error if the card group does not fit into any category
@@ -116,7 +121,7 @@ class Player {
   playCardOrGroupFromHand(cardIndeces, table = [], parseCardGroup = (x) => x) {
     if (cardIndeces instanceof Array)
       return this.playCardGroupFromHand(cardIndeces, table, parseCardGroup);
-    else return this.playCardFromHand(cardIndeces, table);
+    else return this.playCardFromHand(cardIndeces, table, parseCardGroup);
   }
 
   /**
