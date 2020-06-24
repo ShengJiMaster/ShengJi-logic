@@ -4,11 +4,8 @@ const sinon = require('sinon');
 const Card = require('./Card');
 const Player = require('./Player');
 const isSorted = require('util/isSorted');
-const { spy } = require('sinon');
 
 describe('Player', () => {
-  describe('init', () => {});
-
   describe('throwErrorIfNotInstanceOfCard', () => {
     const func = new Player().throwErrorIfNotInstanceOfCard;
     it('should know to throw err', (done) => {
@@ -55,6 +52,26 @@ describe('Player', () => {
         guy.addCardToHand(card);
         expect(card.owner).toEqual(guy.name);
       }
+      done();
+    });
+  });
+
+  describe('writeToTable', () => {
+    it('should write to the players seatPosition, if exists', (done) => {
+      const seatPosition = 2;
+      const guy = new Player(undefined, seatPosition);
+      const table = [];
+      guy.writeToTable('dog', table);
+      expect(table[seatPosition]).toEqual('dog');
+      done();
+    });
+
+    it('should just push to table if seatPosition DNE', (done) => {
+      const guy = new Player();
+      const pos = 5;
+      const table = _.range(pos);
+      guy.writeToTable('dog', table);
+      expect(table[pos]).toEqual('dog');
       done();
     });
   });

@@ -5,14 +5,15 @@ const faker = require('faker');
 
 class Player {
   /**
-   * @param {String} name
-   * @param {Object=defaultOptions} options
+   * @param {String=randomName} name –
+   * @param {[Number]} seatPosition – The index of where the player is sitting the table
    */
-  constructor(name = faker.name.firstName(), options = {}) {
+  constructor(name = faker.name.firstName(), seatPosition) {
     this.name = name;
     this.hand = [];
     this.captured = [];
     this.score = 0;
+    this.seatPosition = seatPosition;
   }
 
   /**Compares cards by their ids*/
@@ -49,6 +50,13 @@ class Player {
     return this.bubbleSortLastCard();
   }
 
+  /** Helper function for playCardFromHand and playCardGroupFromHand */
+  writeToTable(card, table = []) {
+    const { seatPosition } = this;
+    if (typeof seatPosition === 'number') table[seatPosition] = card;
+    else table.push(card);
+  }
+
   /**
    * Plays a card from player's hand to the table
    * @param {Number} cardIndex – Index of the card in hand
@@ -57,14 +65,12 @@ class Player {
    * @returns {Card} – The played card
    */
   playCardFromHand(cardIndex, table = [], parseCard = (x) => x) {
-    const { hand } = this;
+    const { hand, seatPosition } = this;
     let card = hand[cardIndex];
     this.throwErrorIfNotInstanceOfCard(card);
-
     card = parseCard(card);
-
     hand.splice(cardIndex, 1);
-    table.push(card);
+    this.writeToTable(card, table);
     return card;
   }
 
@@ -98,7 +104,7 @@ class Player {
       hand[cardIndex] = null;
     }
 
-    table.push(cardGroup);
+    this.writeToTable(cardGroup, table);
     this.sortHandAndClean();
 
     return cardGroup;
