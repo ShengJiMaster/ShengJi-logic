@@ -26,6 +26,7 @@ class Game {
     const defaultOptions = {
       nDecks: 1,
       deckOptions: {},
+      parseCards: (card) => card,
     };
 
     options = Object.assign({}, defaultOptions, options);
@@ -35,6 +36,7 @@ class Game {
     this.players = [];
     this.table = [];
     this.deck = new Deck(options.nDecks, options.deckOptions);
+    this.parseCards = options.parseCards;
   }
 
   /**
@@ -162,17 +164,14 @@ class Game {
    * Plays one or more cards from a player's hand to the table
    * @param {Number} playerIndex – the index of the player in Game.players
    * @param {Number} cardIndex – the index of the card in Player.hand
+   * @returns {Card | [Card]} - the played card or card group
    */
-  playCardOrGroupToTable(
-    playerIndex,
-    cardIndeces,
-    parseCards = (card) => card,
-  ) {
+  playCardOrGroupToTable(playerIndex, cardIndeces) {
     this.stopGameIfTooFewOrManyPlayers();
     const { table, players } = this;
     const player = players[playerIndex];
     this.throwErrorIfNotInstanceOfPlayer(player);
-    return player.playCardOrGroupFromHand(cardIndeces, table, parseCards);
+    return player.playCardOrGroupFromHand(cardIndeces, table, this.parseCards);
   }
 
   /**

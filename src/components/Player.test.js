@@ -236,6 +236,20 @@ describe('Player', () => {
       expect(spy.callCount).toEqual(nCards);
       done();
     });
+
+    const nCards = 3;
+    const cards = _.range(nCards).map((n) =>
+      _.range(n).map((i) => new Card(i)),
+    );
+    const nestedGuy = new Player();
+
+    it('should handle nested array of cards', (done) => {
+      const checkCapture = () => nestedGuy.captureCards(cards);
+      expect(checkCapture).not.toThrow(Error);
+      done();
+    });
+
+    it('should flatten a nested array of cards', () => {});
   });
 
   describe('clearCardsDangerously', () => {

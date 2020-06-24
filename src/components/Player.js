@@ -23,7 +23,13 @@ class Player {
   /**Throws and error if the card is not an instance of Card */
   throwErrorIfNotInstanceOfCard(card) {
     if (!(card instanceof Card)) {
-      throw new Error('The provided card must be an instance of Card');
+      throw new Error(
+        `The provided card must be an instance of Card; received=${JSON.stringify(
+          card,
+          null,
+          2,
+        )}`,
+      );
     }
   }
 
@@ -49,7 +55,7 @@ class Player {
     return this.bubbleSortLastCard();
   }
 
-  /** Helper function for playCardFromHand and playCardGroupFromHand */
+  /** Helper function for playCardFromHand and playCardGroupFromHand. Writes card to the player's seat position if exists. Otherwise just pushes to table */
   writeToTable(card, table = []) {
     const { seatPosition } = this;
     if (typeof seatPosition === 'number') table[seatPosition] = card;
@@ -64,7 +70,7 @@ class Player {
    * @returns {Card} – The played card
    */
   playCardFromHand(cardIndex, table = [], parseCard = (x) => x) {
-    const { hand, seatPosition } = this;
+    const { hand } = this;
     let card = hand[cardIndex];
     this.throwErrorIfNotInstanceOfCard(card);
     card = parseCard(card);
@@ -78,6 +84,7 @@ class Player {
    * @param {[Number]} cardIndeces
    * @param {Array} table
    * @param {[Function]} parseCardGroup – Used to identify a specific category of card groups. May throw an error if the card group does not fit into any category
+   * @returns {[Card]} – The played card group
    */
   playCardGroupFromHand(
     cardIndeces = [],
@@ -114,6 +121,7 @@ class Player {
    * @param {Array | Number} cardIndeces
    * @param {[Array]} table
    * @param {[Function]} parseCards
+   * @returns {Card | [Card]} – The played card or card group
    */
   playCardOrGroupFromHand(cardIndeces, table = [], parseCards = (x) => x) {
     if (cardIndeces instanceof Array)
@@ -161,7 +169,6 @@ class Player {
    * @param {Card} card
    */
   updateScoreWithCard(card) {
-    this.throwErrorIfNotInstanceOfCard(card);
     const cardVal = this.appraiseCard(card);
     this.score += cardVal;
   }
@@ -175,13 +182,15 @@ class Player {
     const { captured } = this;
     for (let i = 0; i < hand.length; i++) {
       const card = hand[i];
-      this.throwErrorIfNotInstanceOfCard(card);
-    }
-
-    for (let i = 0; i < hand.length; i++) {
-      const card = hand[i];
-      this.updateScoreWithCard(card);
-      captured.push(card);
+      if (card instanceof Array) {
+        for (let i = 0; i < card.length; i++) {
+          this.updateScoreWithCard(card[i]);
+          captured.push(card[i]);
+        }
+      } else {
+        this.updateScoreWithCard(card);
+        captured.push(card);
+      }
     }
 
     return captured;
