@@ -21,7 +21,13 @@ Modular game logic for <b>ShengJi</b>, the classic Chinese trick-taking card gam
 
 ### Dependencies
 
+- none
+
+### Dev Dependencies
+
 - lodash
+- jest
+- sinon
 
 ### Sources
 
