@@ -4,6 +4,7 @@ const sinon = require('sinon');
 const Card = require('./Card');
 const Player = require('./Player');
 const isSorted = require('util/isSorted');
+const { spy } = require('sinon');
 
 describe('Player', () => {
   describe('init', () => {});
@@ -127,6 +128,27 @@ describe('Player', () => {
 
     it('should not play any cards if at least one of the cardIndeces is valid', (done) => {
       expect(anotherGuy.hand).toEqual(prevHand);
+      done();
+    });
+  });
+
+  describe('playCardOrGroupFromHand', () => {
+    const myPlayer = new Player();
+    myPlayer.hand = _.range(3).map((n) => new Card(n));
+    const spySingular = sinon.spy(myPlayer, 'playCardFromHand');
+    const spyPlural = sinon.spy(myPlayer, 'playCardGroupFromHand');
+
+    it('should invoke playCardFromHand with a number', (done) => {
+      myPlayer.playCardOrGroupFromHand(0);
+      expect(spySingular.callCount).toEqual(1);
+      expect(spyPlural.callCount).toEqual(0);
+      done();
+    });
+
+    it('should invoke playCardGroupFromHand with a number', (done) => {
+      myPlayer.playCardOrGroupFromHand([0]);
+      expect(spySingular.callCount).toEqual(1);
+      expect(spyPlural.callCount).toEqual(1);
       done();
     });
   });

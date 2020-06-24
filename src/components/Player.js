@@ -108,6 +108,18 @@ class Player {
   }
 
   /**
+   * Flexibly plays either a card or a card group from hand to table, depending on the input
+   * @param {Array | Number} cardIndeces
+   * @param {[Array]} table
+   * @param {[Function]} parseCardGroup
+   */
+  playCardOrGroupFromHand(cardIndeces, table = [], parseCardGroup = (x) => x) {
+    if (cardIndeces instanceof Array)
+      return this.playCardGroupFromHand(cardIndeces, table, parseCardGroup);
+    else return this.playCardFromHand(cardIndeces, table);
+  }
+
+  /**
    * Uses radix sort to sort hand and clears nulls from the hand. Assumes that all cards in hand are instanceof Card
    */
   sortHand(parse = (card) => card.id) {
