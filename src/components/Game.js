@@ -159,16 +159,20 @@ class Game {
   }
 
   /**
-   * Plays a card from a player's hand to the table
+   * Plays one or more cards from a player's hand to the table
    * @param {Number} playerIndex – the index of the player in Game.players
    * @param {Number} cardIndex – the index of the card in Player.hand
    */
-  playCardToTable(playerIndex, cardIndex) {
+  playCardOrGroupToTable(
+    playerIndex,
+    cardIndeces,
+    parseCards = (card) => card,
+  ) {
     this.stopGameIfTooFewOrManyPlayers();
     const { table, players } = this;
     const player = players[playerIndex];
     this.throwErrorIfNotInstanceOfPlayer(player);
-    return player.playCardFromHand(cardIndex, table);
+    return player.playCardOrGroupFromHand(cardIndeces, table, parseCards);
   }
 
   /**

@@ -108,12 +108,12 @@ class Player {
    * Flexibly plays either a card or a card group from hand to table, depending on the input
    * @param {Array | Number} cardIndeces
    * @param {[Array]} table
-   * @param {[Function]} parseCardGroup
+   * @param {[Function]} parseCards
    */
-  playCardOrGroupFromHand(cardIndeces, table = [], parseCardGroup = (x) => x) {
+  playCardOrGroupFromHand(cardIndeces, table = [], parseCards = (x) => x) {
     if (cardIndeces instanceof Array)
-      return this.playCardGroupFromHand(cardIndeces, table, parseCardGroup);
-    else return this.playCardFromHand(cardIndeces, table, parseCardGroup);
+      return this.playCardGroupFromHand(cardIndeces, table, parseCards);
+    else return this.playCardFromHand(cardIndeces, table, parseCards);
   }
 
   /**

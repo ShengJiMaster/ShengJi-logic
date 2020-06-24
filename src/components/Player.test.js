@@ -146,7 +146,7 @@ describe('Player', () => {
     });
 
     it('should invoke playCardGroupFromHand with a number', (done) => {
-      myPlayer.playCardOrGroupFromHand([0]);
+      myPlayer.playCardOrGroupFromHand([0, 1]);
       expect(spySingular.callCount).toEqual(1);
       expect(spyPlural.callCount).toEqual(1);
       done();
