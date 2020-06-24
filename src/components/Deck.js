@@ -1,5 +1,5 @@
 const Card = require('./Card');
-const _ = require('lodash');
+const shuffle = require('util/shuffle');
 
 /**Creates a Deck of Cards */
 class Deck {
@@ -45,7 +45,7 @@ class Deck {
    * @returns {[Card]}
    */
   shuffle() {
-    this.deck = _.shuffle(this.deck);
+    this.deck = shuffle(this.deck);
     return this.deck;
   }
 
