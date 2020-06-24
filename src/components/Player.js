@@ -84,6 +84,7 @@ class Player {
    * @param {[Number]} cardIndeces
    * @param {Array} table
    * @param {[Function]} parseCardGroup – Used to identify a specific category of card groups. May throw an error if the card group does not fit into any category
+   * @returns {[Card]} – The played card group
    */
   playCardGroupFromHand(
     cardIndeces = [],
@@ -120,6 +121,7 @@ class Player {
    * @param {Array | Number} cardIndeces
    * @param {[Array]} table
    * @param {[Function]} parseCards
+   * @returns {Card | [Card]} – The played card or card group
    */
   playCardOrGroupFromHand(cardIndeces, table = [], parseCards = (x) => x) {
     if (cardIndeces instanceof Array)
