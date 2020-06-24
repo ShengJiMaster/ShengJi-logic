@@ -38,12 +38,20 @@ class Game {
   }
 
   /**
+   * Reads how many players are currently in the game
+   * @returns {Number}
+   */
+  get nPlayers() {
+    return this.players.length;
+  }
+
+  /**
    * Checks if the game has enough players
    * @returns {Boolean}
    */
   get hasTooFewPlayers() {
-    const { minPlayers, players } = this;
-    return players.length < minPlayers;
+    const { minPlayers, nPlayers } = this;
+    return nPlayers < minPlayers;
   }
 
   /**
@@ -51,8 +59,8 @@ class Game {
    * @returns {Boolean}
    */
   get hasTooManyPlayers() {
-    const { maxPlayers, players } = this;
-    return maxPlayers < players.length;
+    const { maxPlayers, nPlayers } = this;
+    return maxPlayers < nPlayers;
   }
 
   /**
@@ -62,13 +70,13 @@ class Game {
     const {
       minPlayers,
       maxPlayers,
-      players,
+      nPlayers,
       hasTooFewPlayers,
       hasTooManyPlayers,
     } = this;
     if (hasTooFewPlayers || hasTooManyPlayers) {
       throw new Error(
-        `Game requires ${minPlayers}<= nPlayers <=${maxPlayers}; received nPlayers=${players.length}`,
+        `Game requires ${minPlayers}<= nPlayers <=${maxPlayers}; received nPlayers=${nPlayers}`,
       );
     }
   }
@@ -78,8 +86,8 @@ class Game {
    * @returns {Boolean}
    */
   get canAddAnotherPlayer() {
-    const { maxPlayers, players } = this;
-    return players.length < maxPlayers;
+    const { maxPlayers, nPlayers } = this;
+    return nPlayers < maxPlayers;
   }
 
   /**
@@ -88,7 +96,7 @@ class Game {
    * @returns {Number} – the new number of players
    */
   addPlayer(name) {
-    const { players, canAddAnotherPlayer } = this;
+    const { players, canAddAnotherPlayer, nPlayers } = this;
     if (!canAddAnotherPlayer) return;
     for (let i = 0; i < players.length; i++) {
       if (players[i].name === name) {
@@ -98,7 +106,7 @@ class Game {
         );
       }
     }
-    const player = new Player(name);
+    const player = new Player(name, nPlayers);
     players.push(player);
     return player;
   }
@@ -140,20 +148,31 @@ class Game {
   }
 
   /**
-   * Plays a card from a player's hand to the table
+   * @param {*} player
+   */
+  throwErrorIfNotInstanceOfPlayer(player) {
+    if (!(player instanceof Player)) {
+      throw new Error(
+        `The provided argument must be instance of Player; received type=${typeof player}; val=${player}`,
+      );
+    }
+  }
+
+  /**
+   * Plays one or more cards from a player's hand to the table
    * @param {Number} playerIndex – the index of the player in Game.players
    * @param {Number} cardIndex – the index of the card in Player.hand
    */
-  playCardToTable(playerIndex, cardIndex) {
+  playCardOrGroupToTable(
+    playerIndex,
+    cardIndeces,
+    parseCards = (card) => card,
+  ) {
     this.stopGameIfTooFewOrManyPlayers();
     const { table, players } = this;
     const player = players[playerIndex];
-    if (!player instanceof Player) {
-      throw new Error(
-        `player does not exist; playerIndex=${playerIndex}; nPlayers=${players.length}`,
-      );
-    }
-    return player.playCardFromHand(cardIndex, table);
+    this.throwErrorIfNotInstanceOfPlayer(player);
+    return player.playCardOrGroupFromHand(cardIndeces, table, parseCards);
   }
 
   /**
@@ -164,11 +183,7 @@ class Game {
     this.stopGameIfTooFewOrManyPlayers();
     const { table, players } = this;
     const player = players[playerIndex];
-    if (!player instanceof Player) {
-      throw new Error(
-        `player does not exist; playerIndex=${playerIndex}; nPlayers=${players.length}`,
-      );
-    }
+    this.throwErrorIfNotInstanceOfPlayer(player);
     return player.captureCards(table);
   }
 

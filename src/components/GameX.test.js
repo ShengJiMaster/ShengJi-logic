@@ -79,6 +79,15 @@ describe('Game', () => {
       expect(myGame.players.length).toEqual(3);
       done();
     });
+
+    it('should add player with correct seatPositions', (done) => {
+      const myGame = new Game(4);
+      for (let i = 0; i < 4; i++) myGame.addPlayer();
+      expect(myGame.players.map((player) => player.seatPosition)).toEqual(
+        _.range(4),
+      );
+      done();
+    });
   });
 
   describe('removePlayer', () => {
@@ -126,13 +135,13 @@ describe('Game', () => {
     });
   });
 
-  describe('playCardToTable', () => {
+  describe('playCardOrGroupToTable', () => {
     it('should remove the card from the players hande', (done) => {
       const myGame = new Game(4);
       for (let i = 0; i < 4; i++) myGame.addPlayer();
       const nCards = 2;
       myGame.dealCards(nCards);
-      const card = myGame.playCardToTable(0, 0);
+      const card = myGame.playCardOrGroupToTable(0, 0);
       const player = myGame.players[0];
       const hand = player.hand;
       expect(hand.includes(card)).toBe(false);
@@ -144,7 +153,7 @@ describe('Game', () => {
       for (let i = 0; i < 2; i++) myGame.addPlayer();
       const nCards = 2;
       myGame.dealCards(nCards);
-      const card = myGame.playCardToTable(0, 0);
+      const card = myGame.playCardOrGroupToTable(0, 0);
       expect(card).toBeInstanceOf(Card);
       done();
     });

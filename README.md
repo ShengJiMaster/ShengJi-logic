@@ -4,8 +4,20 @@
 
 [![Build Status](https://travis-ci.org/ShengJiMaster/game-logic.svg?branch=master)](https://travis-ci.org/ShengJiMaster/game-logic)
 
-Game logic for <b>ShengJi</b>, the classic Chinese trick-taking card game!
+Modular game logic for <b>ShengJi</b>, the classic Chinese trick-taking card game!
 
-### Sources 
+### Modules
 
- - [Wikipedia](https://en.wikipedia.org/wiki/Sheng_ji)
+- Card
+- Player
+- Deck
+- Game
+  - TrickGame
+
+### Dependencies
+
+- lodash
+
+### Sources
+
+- [Wikipedia](https://en.wikipedia.org/wiki/Sheng_ji)

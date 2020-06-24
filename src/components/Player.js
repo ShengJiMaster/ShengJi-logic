@@ -1,17 +1,18 @@
 const Card = require('./Card');
 const { radixSort } = require('util/radixSort');
-const faker = require('faker');
+const bubbleSortLastCard = require('util/bubbleSortLastElement');
 
 class Player {
   /**
-   * @param {String} name
-   * @param {Object=defaultOptions} options
+   * @param {String=randomName} name –
+   * @param {[Number]} seatPosition – The index of where the player is sitting the table
    */
-  constructor(name = faker.name.firstName(), options = {}) {
+  constructor(name = 'player', seatPosition) {
     this.name = name;
     this.hand = [];
     this.captured = [];
     this.score = 0;
+    this.seatPosition = seatPosition;
   }
 
   /**Compares cards by their ids*/
@@ -19,22 +20,20 @@ class Player {
     return a.id - b.id;
   }
 
+  /**Throws and error if the card is not an instance of Card */
+  throwErrorIfNotInstanceOfCard(card) {
+    if (!(card instanceof Card)) {
+      throw new Error('The provided card must be an instance of Card');
+    }
+  }
+
   /**
    * Sorts the last card into the rest of the sorted hand
    * @returns {Player}
    */
   bubbleSortLastCard() {
-    const { hand, comparator } = this;
-    const len = hand.length;
-    if (len < 1) return this;
-    let i = len - 1;
-    while (0 < i) {
-      const swap = comparator(hand[i - 1], hand[i]) > 0;
-      if (swap) {
-        [hand[i], hand[i - 1]] = [hand[i - 1], hand[i]];
-      } else break;
-      i--;
-    }
+    const { hand } = this;
+    this.hand = bubbleSortLastCard(hand, (card) => card.id);
     return this;
   }
 
@@ -43,36 +42,109 @@ class Player {
    * @returns {Player}
    */
   addCardToHand(card) {
+    this.throwErrorIfNotInstanceOfCard(card);
     const { hand, name } = this;
-    if (!card instanceof Card)
-      throw new Error(
-        `card must be instance of the Card class; received card=${card}`,
-      );
     card.claimOwnership(name);
     hand.push(card);
     return this.bubbleSortLastCard();
   }
 
+  /** Helper function for playCardFromHand and playCardGroupFromHand */
+  writeToTable(card, table = []) {
+    const { seatPosition } = this;
+    if (typeof seatPosition === 'number') table[seatPosition] = card;
+    else table.push(card);
+  }
+
   /**
    * Plays a card from player's hand to the table
-   * @param {Number} i
-   * @param {[Array]} – The table from Deck class
+   * @param {Number} cardIndex – Index of the card in hand
+   * @param {[Array]} table – The table from Deck class
+   * @param {[Function]} parseCard – In case mutating the card is necessary for the game
    * @returns {Card} – The played card
    */
-  playCardFromHand(i, table = []) {
-    const { hand } = this;
-    const [card] = hand.splice(i, 1);
-    if (!card instanceof Card) return;
-    table.push(card);
+  playCardFromHand(cardIndex, table = [], parseCard = (x) => x) {
+    const { hand, seatPosition } = this;
+    let card = hand[cardIndex];
+    this.throwErrorIfNotInstanceOfCard(card);
+    card = parseCard(card);
+    hand.splice(cardIndex, 1);
+    this.writeToTable(card, table);
     return card;
   }
 
   /**
-   * Uses radix sort to sort hand. Only used when recreating game from commit log after crash
+   * Plays multiple cards from hand to the table
+   * @param {[Number]} cardIndeces
+   * @param {Array} table
+   * @param {[Function]} parseCardGroup – Used to identify a specific category of card groups. May throw an error if the card group does not fit into any category
    */
-  sortHand() {
-    const hand = this.hand;
-    this.hand = radixSort(hand, (card) => card.id);
+  playCardGroupFromHand(
+    cardIndeces = [],
+    table = [],
+    parseCardGroup = (cards) => cards,
+  ) {
+    const { hand } = this;
+    let cardGroup = [];
+
+    // get and validate cards
+    for (let i = 0; i < cardIndeces.length; i++) {
+      const cardIndex = cardIndeces[i];
+      const card = hand[cardIndex];
+      this.throwErrorIfNotInstanceOfCard(card);
+      cardGroup.push(card);
+    }
+
+    cardGroup = parseCardGroup(cardGroup);
+
+    // delete cards from hand
+    for (let i = 0; i < cardIndeces.length; i++) {
+      const cardIndex = cardIndeces[i];
+      hand[cardIndex] = null;
+    }
+
+    this.writeToTable(cardGroup, table);
+    this.sortHandAndClean();
+
+    return cardGroup;
+  }
+
+  /**
+   * Flexibly plays either a card or a card group from hand to table, depending on the input
+   * @param {Array | Number} cardIndeces
+   * @param {[Array]} table
+   * @param {[Function]} parseCards
+   */
+  playCardOrGroupFromHand(cardIndeces, table = [], parseCards = (x) => x) {
+    if (cardIndeces instanceof Array)
+      return this.playCardGroupFromHand(cardIndeces, table, parseCards);
+    else return this.playCardFromHand(cardIndeces, table, parseCards);
+  }
+
+  /**
+   * Uses radix sort to sort hand and clears nulls from the hand.
+   * Assumes that all cards in hand are instanceof Card.
+   * Does not do an in-place sort to prevent the frontend from constantly updating before finishing
+   */
+  sortHand(parse = (card) => card.id) {
+    this.hand = radixSort(this.hand, parse);
+  }
+
+  /**
+   * Invokes sort hand and removes all non instances of Card from the hand
+   */
+  sortHandAndClean() {
+    this.sortHand((card) => {
+      if (!(card instanceof Card)) return 99;
+      else return card.id;
+    });
+
+    const { hand } = this;
+    let i = hand.length - 1;
+    while (hand[i] === null) {
+      hand.pop();
+      i--;
+    }
   }
 
   /**
@@ -80,6 +152,7 @@ class Player {
    * @param {Card} card
    */
   appraiseCard(card) {
+    this.throwErrorIfNotInstanceOfCard(card);
     return 0;
   }
 
@@ -88,8 +161,7 @@ class Player {
    * @param {Card} card
    */
   updateScoreWithCard(card) {
-    if (!card instanceof Card)
-      throw new Error('The card must be instance of Card');
+    this.throwErrorIfNotInstanceOfCard(card);
     const cardVal = this.appraiseCard(card);
     this.score += cardVal;
   }
@@ -103,11 +175,7 @@ class Player {
     const { captured } = this;
     for (let i = 0; i < hand.length; i++) {
       const card = hand[i];
-      if (!card instanceof Card) {
-        throw new Error(
-          'All captured cards must be instances of the class Card',
-        );
-      }
+      this.throwErrorIfNotInstanceOfCard(card);
     }
 
     for (let i = 0; i < hand.length; i++) {

@@ -1,7 +1,3 @@
-class ShengJi {
-  constructor(players = []) {
-    this.players = players;
-  }
-}
+class ShengJi {}
 
 module.exports = ShengJi;
