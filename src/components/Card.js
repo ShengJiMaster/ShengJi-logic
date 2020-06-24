@@ -81,10 +81,10 @@ class Card {
    * toTrickRank – calculates a card's relative value in a trick in constant time and memory
    * @param {Number} leadSuit – 0 <= leadSuit <= 3
    * @param {Number} trumpSuit – 0 <= trumpSuit <= 3
-   * @param {Number=12} trumpRank – 0 <= trumpRank <= 12
+   * @param {[Number]} trumpRank – 0 <= trumpRank <= 12
    * @returns {Number} – 0 <= trickRank <= 27
    */
-  toTrickRank(leadSuit, trumpSuit, trumpRank = 12) {
+  toTrickRank(leadSuit, trumpSuit, trumpRank) {
     const { id, r, s, maxTrickRank } = this;
     if (id === 53) return maxTrickRank;
     if (id === 52) return maxTrickRank - 1;
@@ -99,7 +99,7 @@ class Card {
         `leadSuit must be 0 <= n <= 3; received leadSuit=${leadSuit}`,
       );
 
-    if (typeof trumpRank !== 'number' || trumpRank < 0 || 12 < trumpRank)
+    if (typeof trumpRank === 'number' && (trumpRank < 0 || 12 < trumpRank))
       throw new Error(
         `trumpRank must be 0 <= n <= 12; received trumpRank=${trumpRank}`,
       );
