@@ -50,24 +50,33 @@ describe('TrickGame', () => {
     });
   });
 
+  const myWinningGame = new TrickGame(4);
+  const whoStartsRound = 2;
+  myWinningGame.whoStartsRound = whoStartsRound;
+  myWinningGame.trumpRank = 5;
+  myWinningGame.trumpSuit = 2;
+  for (let i = 0; i < 4; i++) myWinningGame.addPlayer();
+  myWinningGame.table = _.range(4).map((n) => new Card(n));
+  myWinningGame.table[0] = new Card(36);
+
   describe('trickWinner', () => {
-    const myGame = new TrickGame(4);
-    const whoStartsRound = 2;
-    myGame.whoStartsRound = whoStartsRound;
-    myGame.trumpRank = 5;
-    myGame.trumpSuit = 2;
-    for (let i = 0; i < 4; i++) myGame.addPlayer();
-    myGame.table = _.range(4).map((n) => new Card(n));
-    myGame.table[0] = new Card(36);
-
-    const checkWinner = () => myGame.trickWinner;
-
+    const checkWinner = () => myWinningGame.trickWinner;
     it('should identify a trump', (done) => {
       let ans;
       expect(() => {
         ans = checkWinner();
       }).not.toThrow(Error);
       expect(ans).toEqual(0);
+      done();
+    });
+  });
+
+  describe('winnerCaptureCards', () => {
+    it('should give the cards to the winner', (done) => {
+      const winner = myWinningGame.players[myWinningGame.trickWinner];
+      const cards = _.flatten(myWinningGame.table);
+      myWinningGame.winnerCaptureCards();
+      expect(winner.captured).toEqual(cards);
       done();
     });
   });

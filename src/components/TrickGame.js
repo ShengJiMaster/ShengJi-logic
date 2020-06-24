@@ -30,6 +30,7 @@ class TrickGame extends Game {
    * Invokes playCardOrGroupToTable ONLY IF it's that player's turn
    * @param {Number} playerIndex
    * @param {Number | [Number]} cardIndeces
+   * @returns {Card | [Card]} the played card or card group
    */
   playCardOrGroupToTrick(playerIndex, cardIndeces) {
     const { whosTurn } = this;
@@ -63,6 +64,29 @@ class TrickGame extends Game {
       }
     }
     return winnerIndex;
+  }
+
+  /**
+   * Lets the trickWinner, if exists, capture all the cards on the table. Also lets trickWinner start the next round
+   * @returns {[Card]} – the captured cards
+   */
+  winnerCaptureCards() {
+    const { trickWinner, players, trick } = this;
+    const player = players[trickWinner];
+    if (!player) return;
+    this.whoStartsRound = trickWinner;
+    return player.captureCards(trick);
+  }
+
+  /**
+   * The easiest function to use
+   * @param {Number} playerIndex
+   * @param {Number | [Number]} cardIndeces
+   */
+  playHand(playerIndex, cardIndeces) {
+    const played = this.playCardOrGroupToTrick(playerIndex, cardIndeces);
+    this.winnerCaptureCards();
+    return played;
   }
 }
 
