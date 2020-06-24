@@ -1,14 +1,13 @@
 const Card = require('./Card');
 const { radixSort } = require('util/radixSort');
 const bubbleSortLastCard = require('util/bubbleSortLastElement');
-const faker = require('faker');
 
 class Player {
   /**
    * @param {String=randomName} name –
    * @param {[Number]} seatPosition – The index of where the player is sitting the table
    */
-  constructor(name = faker.name.firstName(), seatPosition) {
+  constructor(name = 'player', seatPosition) {
     this.name = name;
     this.hand = [];
     this.captured = [];
