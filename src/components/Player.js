@@ -1,5 +1,6 @@
 const Card = require('./Card');
 const { radixSort } = require('util/radixSort');
+const bubbleSortLastCard = require('util/bubbleSortLastElement');
 const faker = require('faker');
 
 class Player {
@@ -31,17 +32,8 @@ class Player {
    * @returns {Player}
    */
   bubbleSortLastCard() {
-    const { hand, comparator } = this;
-    const len = hand.length;
-    if (len < 1) return this;
-    let i = len - 1;
-    while (0 < i) {
-      const swap = comparator(hand[i - 1], hand[i]) > 0;
-      if (swap) {
-        [hand[i], hand[i - 1]] = [hand[i - 1], hand[i]];
-      } else break;
-      i--;
-    }
+    const { hand } = this;
+    this.hand = bubbleSortLastCard(hand, (card) => card.id);
     return this;
   }
 
@@ -130,7 +122,7 @@ class Player {
    * Does not do an in-place sort to prevent the frontend from constantly updating before finishing
    */
   sortHand(parse = (card) => card.id) {
-    this.hand = radixSort(this.hand.slice(), parse);
+    this.hand = radixSort(this.hand, parse);
   }
 
   /**
