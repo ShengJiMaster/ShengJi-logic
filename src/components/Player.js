@@ -120,7 +120,9 @@ class Player {
   }
 
   /**
-   * Uses radix sort to sort hand and clears nulls from the hand. Assumes that all cards in hand are instanceof Card
+   * Uses radix sort to sort hand and clears nulls from the hand.
+   * Assumes that all cards in hand are instanceof Card.
+   * Does not do an in-place sort to prevent the frontend from constantly updating before finishing
    */
   sortHand(parse = (card) => card.id) {
     this.hand = radixSort(this.hand.slice(), parse);
