@@ -96,7 +96,7 @@ class Game {
    * @returns {Number} – the new number of players
    */
   addPlayer(name) {
-    const { players, canAddAnotherPlayer } = this;
+    const { players, canAddAnotherPlayer, nPlayers } = this;
     if (!canAddAnotherPlayer) return;
     for (let i = 0; i < players.length; i++) {
       if (players[i].name === name) {
@@ -106,7 +106,7 @@ class Game {
         );
       }
     }
-    const player = new Player(name);
+    const player = new Player(name, nPlayers);
     players.push(player);
     return player;
   }
